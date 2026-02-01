@@ -524,6 +524,88 @@ export class SneakerCardComponent {
 </article>
 ```
 
+### features/sneakers/components/sneaker-card/sneaker-card.component.scss
+
+```scss
+.sneaker-card {
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  a {
+    display: block;
+  }
+
+  .sneaker-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background-color: var(--background-color);
+  }
+
+  .sneaker-info {
+    padding: 1rem;
+  }
+
+  .sneaker-name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sneaker-colors {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .sneaker-price {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    .original-price {
+      font-size: 0.875rem;
+      color: var(--secondary-color);
+      text-decoration: line-through;
+    }
+
+    .final-price {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .reduction {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--white);
+      background-color: var(--accent-color);
+      padding: 0.125rem 0.5rem;
+      border-radius: 4px;
+    }
+  }
+
+  .unavailable {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--accent-color);
+    font-weight: 500;
+  }
+}
+```
+
 ---
 
 ### features/sneakers/pages/sneaker-list/sneaker-list.component.ts
@@ -665,6 +747,113 @@ export class SneakerListComponent implements OnInit {
 </section>
 ```
 
+### features/sneakers/pages/sneaker-list/sneaker-list.component.scss
+
+```scss
+.sneaker-list-page {
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 0.75rem 1rem;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+    }
+
+    select {
+      padding: 0.75rem 1rem;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      background-color: var(--white);
+      cursor: pointer;
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+    }
+
+    button {
+      padding: 0.75rem 1.5rem;
+      background-color: var(--primary-color);
+      color: var(--white);
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #333;
+      }
+    }
+  }
+
+  .loading,
+  .error {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.125rem;
+  }
+
+  .error {
+    color: var(--accent-color);
+  }
+
+  .sneakers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+
+    button {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      background-color: var(--white);
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+
+      &:hover {
+        border-color: var(--primary-color);
+      }
+
+      &.active {
+        background-color: var(--primary-color);
+        color: var(--white);
+        border-color: var(--primary-color);
+      }
+    }
+  }
+}
+```
+
 ---
 
 ### features/sneakers/pages/sneaker-detail/sneaker-detail.component.ts
@@ -672,6 +861,7 @@ export class SneakerListComponent implements OnInit {
 ```typescript
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import { SneakerService } from '../../services/sneaker.service';
 import { Sneaker } from '../../models/sneaker.model';
 import { PricePipe } from '../../../../shared/pipes/price.pipe';
@@ -679,7 +869,7 @@ import { PricePipe } from '../../../../shared/pipes/price.pipe';
 @Component({
   selector: 'app-sneaker-detail',
   standalone: true,
-  imports: [RouterLink, PricePipe],
+  imports: [RouterLink, DatePipe, PricePipe],
   templateUrl: './sneaker-detail.component.html',
   styleUrl: './sneaker-detail.component.scss'
 })
@@ -718,6 +908,316 @@ export class SneakerDetailComponent implements OnInit {
 }
 ```
 
+### features/sneakers/pages/sneaker-detail/sneaker-detail.component.html
+
+```html
+<section class="sneaker-detail-page">
+  <!-- Loading -->
+  @if (loading()) {
+    <p class="loading">Chargement...</p>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="error-container">
+      <p class="error">{{ error() }}</p>
+      <a routerLink="/sneakers" class="back-link">Retour à la liste</a>
+    </div>
+  }
+
+  <!-- Détail -->
+  @if (sneaker(); as s) {
+    <div class="sneaker-content">
+      <!-- Galerie d'images -->
+      <div class="image-gallery">
+        <div class="main-image">
+          @if (s.images.length > 0) {
+            <img [src]="s.images[selectedImage()]" [alt]="s.name">
+          }
+        </div>
+
+        @if (s.images.length > 1) {
+          <div class="thumbnails">
+            @for (image of s.images; track $index) {
+              <button
+                [class.active]="selectedImage() === $index"
+                (click)="selectImage($index)"
+              >
+                <img [src]="image" [alt]="s.name + ' - Image ' + ($index + 1)">
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Informations -->
+      <div class="sneaker-info">
+        <a routerLink="/sneakers" class="back-link">← Retour</a>
+
+        <h1>{{ s.name }}</h1>
+        <p class="colors">{{ s.colors }}</p>
+
+        <div class="price-section">
+          @if (s.reduction > 0) {
+            <span class="original-price">{{ s.price | price }}</span>
+            <span class="final-price">{{ s.finalPrice | price }}</span>
+            <span class="reduction">-{{ s.reduction }}%</span>
+          } @else {
+            <span class="final-price">{{ s.price | price }}</span>
+          }
+        </div>
+
+        @if (s.available) {
+          <div class="sizes-section">
+            <h3>Tailles disponibles</h3>
+            <div class="sizes">
+              @for (size of s.sizes; track size) {
+                <button class="size-btn">{{ size }}</button>
+              }
+            </div>
+          </div>
+
+          <div class="delivery-info">
+            <p>Livraison en {{ s.deliveryTime }} jours</p>
+            <p>
+              @if (s.deliveryPrice === 0) {
+                Livraison gratuite
+              } @else {
+                Frais de livraison : {{ s.deliveryPrice | price }}
+              }
+            </p>
+          </div>
+
+          <button class="add-to-cart">Ajouter au panier</button>
+        } @else {
+          <p class="unavailable">Ce produit est actuellement indisponible</p>
+        }
+
+        <div class="release-date">
+          <p>Date de sortie : {{ s.releaseDate | date:'dd/MM/yyyy' }}</p>
+        </div>
+      </div>
+    </div>
+  }
+</section>
+```
+
+### features/sneakers/pages/sneaker-detail/sneaker-detail.component.scss
+
+```scss
+.sneaker-detail-page {
+  .loading,
+  .error {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.125rem;
+  }
+
+  .error {
+    color: var(--accent-color);
+  }
+
+  .error-container {
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .back-link {
+    color: var(--secondary-color);
+    font-size: 0.875rem;
+    display: inline-block;
+    margin-bottom: 1rem;
+    transition: color 0.2s;
+
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+
+  .sneaker-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  .image-gallery {
+    .main-image {
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      margin-bottom: 1rem;
+
+      img {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+      }
+    }
+
+    .thumbnails {
+      display: flex;
+      gap: 0.5rem;
+
+      button {
+        width: 80px;
+        height: 80px;
+        padding: 0;
+        border: 2px solid transparent;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        cursor: pointer;
+        background: none;
+        transition: border-color 0.2s;
+
+        &:hover,
+        &.active {
+          border-color: var(--primary-color);
+        }
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+  }
+
+  .sneaker-info {
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .colors {
+      color: var(--secondary-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .price-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+
+      .original-price {
+        font-size: 1.125rem;
+        color: var(--secondary-color);
+        text-decoration: line-through;
+      }
+
+      .final-price {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .reduction {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--white);
+        background-color: var(--accent-color);
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+      }
+    }
+
+    .sizes-section {
+      margin-bottom: 1.5rem;
+
+      h3 {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .sizes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        .size-btn {
+          width: 50px;
+          height: 50px;
+          border: 1px solid #ddd;
+          border-radius: var(--border-radius);
+          background-color: var(--white);
+          cursor: pointer;
+          font-weight: 500;
+          transition: all 0.2s;
+
+          &:hover {
+            border-color: var(--primary-color);
+          }
+
+          &.selected {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+          }
+        }
+      }
+    }
+
+    .delivery-info {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background-color: var(--background-color);
+      border-radius: var(--border-radius);
+
+      p {
+        font-size: 0.875rem;
+        color: var(--secondary-color);
+
+        &:not(:last-child) {
+          margin-bottom: 0.25rem;
+        }
+      }
+    }
+
+    .add-to-cart {
+      width: 100%;
+      padding: 1rem;
+      background-color: var(--primary-color);
+      color: var(--white);
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #333;
+      }
+    }
+
+    .unavailable {
+      padding: 1rem;
+      background-color: #fee;
+      color: var(--accent-color);
+      border-radius: var(--border-radius);
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .release-date {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #ddd;
+
+      p {
+        font-size: 0.875rem;
+        color: var(--secondary-color);
+      }
+    }
+  }
+}
+```
+
 ---
 
 ## 8. Shared Module
@@ -752,6 +1252,48 @@ export class HeaderComponent {}
     </ul>
   </nav>
 </header>
+```
+
+### shared/components/header/header.component.scss
+
+```scss
+.header {
+  background-color: var(--white);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+  }
+
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+
+    a {
+      font-weight: 500;
+      color: var(--secondary-color);
+      transition: color 0.2s;
+
+      &:hover,
+      &.active {
+        color: var(--primary-color);
+      }
+    }
+  }
+}
 ```
 
 ---
