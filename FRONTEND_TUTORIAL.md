@@ -499,7 +499,7 @@ export class SneakerCardComponent {
 <article class="sneaker-card">
   <a [routerLink]="['/sneakers', sneaker().id]">
     @if (sneaker().images.length > 0) {
-      <img [src]="sneaker().images[0]" [alt]="sneaker().name" class="sneaker-image">
+      <img [src]="assetsUrl + '/' + sneaker().images[0]" [alt]="sneaker().name" class="sneaker-image">
     }
 
     <div class="sneaker-info">
@@ -932,7 +932,7 @@ export class SneakerDetailComponent implements OnInit {
       <div class="image-gallery">
         <div class="main-image">
           @if (s.images.length > 0) {
-            <img [src]="s.images[selectedImage()]" [alt]="s.name">
+            <img [src]="assetsUrl + s.images[selectedImage()]" [alt]="s.name">
           }
         </div>
 
@@ -943,7 +943,7 @@ export class SneakerDetailComponent implements OnInit {
                 [class.active]="selectedImage() === $index"
                 (click)="selectImage($index)"
               >
-                <img [src]="image" [alt]="s.name + ' - Image ' + ($index + 1)">
+                <img [src]="assetsUrl + image" [alt]="s.name + ' - Image ' + ($index + 1)">
               </button>
             }
           </div>
