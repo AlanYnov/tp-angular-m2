@@ -1,0 +1,63 @@
+<section class="sneaker-list-page">
+  <h1>Nos Sneakers</h1>
+
+  <!-- Filtres -->
+  <div class="filters">
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (keyup.enter)="onSearch()"
+      placeholder="Rechercher une sneaker..."
+      class="search-input"
+    >
+
+    <select [(ngModel)]="sortBy" (change)="loadSneakers()">
+      <option [ngValue]="undefined">Trier par...</option>
+      <option value="price">Prix</option>
+      <option value="name">Nom</option>
+      <option value="release_date">Date de sortie</option>
+    </select>
+
+    <select [(ngModel)]="sortOrder" (change)="loadSneakers()">
+      <option value="asc">Croissant</option>
+      <option value="desc">Décroissant</option>
+    </select>
+
+    <button (click)="onSearch()">Rechercher</button>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <p class="loading">Chargement...</p>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  <!-- Liste -->
+  @if (!loading() && !error()) {
+    <div class="sneakers-grid">
+      @for (sneaker of sneakers(); track sneaker.id) {
+        <app-sneaker-card [sneaker]="sneaker" />
+      } @empty {
+        <p>Aucune sneaker trouvée.</p>
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        @for (page of [].constructor(totalPages()); track $index) {
+          <button
+            [class.active]="currentPage() === $index + 1"
+            (click)="onPageChange($index + 1)"
+          >
+            {{ $index + 1 }}
+          </button>
+        }
+      </div>
+    }
+  }
+</section>

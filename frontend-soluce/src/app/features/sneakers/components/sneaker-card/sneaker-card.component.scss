@@ -1,0 +1,77 @@
+.sneaker-card {
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  a {
+    display: block;
+  }
+
+  .sneaker-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background-color: var(--background-color);
+  }
+
+  .sneaker-info {
+    padding: 1rem;
+  }
+
+  .sneaker-name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sneaker-colors {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .sneaker-price {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    .original-price {
+      font-size: 0.875rem;
+      color: var(--secondary-color);
+      text-decoration: line-through;
+    }
+
+    .final-price {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .reduction {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--white);
+      background-color: var(--accent-color);
+      padding: 0.125rem 0.5rem;
+      border-radius: 4px;
+    }
+  }
+
+  .unavailable {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--accent-color);
+    font-weight: 500;
+  }
+}

@@ -1,0 +1,26 @@
+<article class="sneaker-card">
+  <a [routerLink]="['/sneakers', sneaker().id]">
+    @if (sneaker().images.length > 0) {
+      <img [src]="assetsUrl + '/' + sneaker().images[0]" [alt]="sneaker().name" class="sneaker-image">
+    }
+
+    <div class="sneaker-info">
+      <h3 class="sneaker-name">{{ sneaker().name }}</h3>
+      <p class="sneaker-colors">{{ sneaker().colors }}</p>
+
+      <div class="sneaker-price">
+        @if (sneaker().reduction > 0) {
+          <span class="original-price">{{ sneaker().price | price }}</span>
+          <span class="final-price">{{ sneaker().finalPrice | price }}</span>
+          <span class="reduction">-{{ sneaker().reduction }}%</span>
+        } @else {
+          <span class="final-price">{{ sneaker().price | price }}</span>
+        }
+      </div>
+
+      @if (!sneaker().available) {
+        <span class="unavailable">Indisponible</span>
+      }
+    </div>
+  </a>
+</article>
